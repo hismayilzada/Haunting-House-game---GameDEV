@@ -5,13 +5,14 @@ using UnityEngine.UI;
 
 public class Pistol : MonoBehaviour
 {
+    RaycastHit hit;
 
     public ParticleSystem flash;
     AudioSource pistolAS;
     public AudioClip shootAC;
     Animator anim;
 
-    RaycastHit hit; //oyuncudan çıkan ışın demeti
+    //RaycastHit hit; //oyuncudan çıkan ışın demeti
 
     [SerializeField]
     public int currentAmmo = 12; //şarjördeki mermi
@@ -25,10 +26,10 @@ public class Pistol : MonoBehaviour
 
     [SerializeField]
     float rateOfFire; // ne kadar sürede ateş edebiliriz
-    float nextFire;
+    float nextFire=0;
 
     [SerializeField]
-    int weaponRange; //merminin gittiği uzaklık
+    float weaponRange; //merminin gittiği uzaklık
 
     public float damage = 20f;
 
@@ -40,15 +41,15 @@ public class Pistol : MonoBehaviour
     public Text CarriedAmmo;
 
     public GameObject zeroAmmoText;
+    public GameObject bloodEffect;
 
-
-        void Start()
+    void Start()
     {
         updateAmmoUI();
         anim = GetComponent<Animator>();
         pistolAS = GetComponent<AudioSource>();
         flash.Stop();
-        enemy = FindObjectOfType<EnemyHealth>();
+        //enemy = FindObjectOfType<EnemyHealth>();
     }
 
     
@@ -62,7 +63,7 @@ public class Pistol : MonoBehaviour
         {
             emptyFire();
         }
-        else if ((Input.GetButton("Reload") && currentAmmo <=maxAmmo && !isReloading)) //şarjör değiştirme
+        else if (Input.GetKeyDown(KeyCode.R) && currentAmmo <=maxAmmo && !isReloading) //şarjör değiştirme
         {
             isReloading = true;
             Reload();
@@ -89,7 +90,9 @@ public class Pistol : MonoBehaviour
         {
             if (hit.transform.tag == "Enemy")
             {
-                enemy.reduceHealth(damage);
+                EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+                Instantiate(bloodEffect, hit.point,transform.rotation);
+                enemy.ReduceHealth(damage);
             }
             else
             {

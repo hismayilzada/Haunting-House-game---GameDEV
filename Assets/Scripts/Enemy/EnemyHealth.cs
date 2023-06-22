@@ -4,32 +4,44 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-
- 
-    public float enemyHealth = 100;
+    public float enemyHealth = 100f;
+    EnemyAI enemy;
+    public GameObject bloodEffect;
   
     void Start()
     {
-        
+        enemy=GetComponent<EnemyAI>();
     }
 
    
     void Update()
     {
-        
-    }
-
-    public void reduceHealth(float val)
-    {
-        enemyHealth = enemyHealth-val;
-        if (enemyHealth <= 0)
+        if(enemyHealth<=0) 
         {
-            dead();
+           enemyHealth=0;
         }
     }
 
-    void dead()
+    public void ReduceHealth(float reduceHealth)
     {
-        Destroy(gameObject);
+        enemyHealth -= reduceHealth;
+        if(!enemy.isDead)
+        {
+            enemy.Hurt();
+        }
+
+        if (enemyHealth <= 0)
+        {
+            Dead();
+            enemy.DeadAnim();
+            
+        }
+    }
+
+    void Dead()
+    {
+        bloodEffect.SetActive(true);
+        enemy.canAttack=false;
+        Destroy(gameObject, 3f);
     }
 }
